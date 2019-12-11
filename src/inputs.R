@@ -1,5 +1,8 @@
 # This file contains input variables used in this analysis.
 
+# Load packages
+library(tidyverse)
+
 ## Input #1: past expenses (rent, food, gas, etc.)
 ##################################################
 # Must be a dataframe with one column

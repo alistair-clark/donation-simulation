@@ -5,80 +5,87 @@ library(tidyverse)
 library(scales)
 library(MASS)
 
-# basic histogram of expenses
-plot_expenses_histogram <- function(expenses) {
-  ggplot(expenses, aes(x = expenses)) +
-    geom_histogram(binwidth = 100,
-                   color = "grey30",
-                   fill = "white") +
-    ylim(0, 4) +
+# histogram of expenses
+plot_expenses <- function(expenses,
+                          add_histogram = FALSE,
+                          add_density = FALSE,
+                          add_theoretical = FALSE,
+                          add_simulation = FALSE) {
+  full_plot <- ggplot(expenses,
+                      aes(x = expenses)) +
     scale_x_continuous(label = dollar,
-                       limit = c(1800, 5200)) +
+                       limits = c(min(expenses) - 500,
+                                  max(expenses) + 500)
+                       ) +
     labs(
       title = "",
       subtitle = "",
-      x = "Monthly Expenses, in $",
-      y = "Count of Months"
-    )
-}
-
-# histogram of expenses with density curve
-plot_expenses_density <- function(expenses) {
-  ggplot(expenses, aes(x = expenses)) +
-    geom_histogram(
-      aes(y = ..density..),
-      binwidth = 100,
-      color = "grey30",
-      fill = "white"
-    ) +
-    geom_density(alpha = .1, fill = "antiquewhite3") +
-    scale_x_continuous(label = dollar,
-                       limit = c(1800, 5200)) +
-    labs(
-      title = "",
-      subtitle = "",
-      x = "Monthly Expenses, in $",
-      y = "Density"
-    )
-}
-
-# histogram, density, and theoretical distribution
-plot_expenses_theoretical <- function(expenses, distribution="lognormal") {
-  # fit distribution to expenses
-  fit_data <- fitdistr(expenses[[1]], densfun=distribution)
+      x = "Monthly Expenses, in $"
+      )
   
-  # create function to plot theoretical density
-  expenses_dens <- function(x) dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
-  ggplot(expenses, aes(x = expenses)) +
-    geom_histogram(aes(y = ..density..),
-                   binwidth = 100, color = "grey30", fill = "white") +
-    xlim(1800, 5200) +
-    stat_function(fun = expenses_dens, color = "red") +
-    geom_density(alpha = .2, fill = "antiquewhite3") +
-    labs(title = "",
-         subtitle = '',
-         x = "Monthly Cost of Living, in $",
-         y = 'Density')
+  if (!add_density |
+      !add_theoretical |
+      !add_simulation) {
+    if (add_histogram) {
+      full_plot <- 
+        full_plot +
+        geom_histogram(aes(y = ..density..),
+                       binwidth = 100,
+                       color = "grey30",
+                       fill = "white")
+    }
+    if (add_density) {
+      full_plot <- 
+        full_plot +
+        geom_density(aes(y = ..density..),
+                     alpha = .1,
+                     fill = "antiquewhite3") 
+    }
+    if (add_theoretical | add_simulation) {
+      
+      # Fit lognormal distribution to the data
+      fit_data <- fitdistr(expenses[[1]], "lognormal")
+      
+      if (add_theoretical) {
+        # Create functions to plot lognormal curve on graph
+        expenses_dens <- function(x) dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+        
+        # Add lognormal curve to graph
+        full_plot <- 
+          full_plot +
+          stat_function(aes(x = expenses),
+                        fun = expenses_dens,
+                        color = "red")
+      }
+      if (add_simulation) {
+        # simulate 12 months of expenses
+        expenses_func <- function(x) rlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+        expenses_sim <- data.frame(monthly_expense = expenses_func(12))
+        
+        # add simulated expenses to plot
+        full_plot <- 
+          full_plot +
+          geom_point(data = expenses_sim,
+                     x = expenses_sim$monthly_expense,
+                     y=0.00003,
+                     color='black',
+                     size=5,
+                     alpha=0.5)
+      }
+    }
+    return(full_plot)
+  }
+  if (add_histogram) {
+    full_plot <- 
+      full_plot + 
+      geom_histogram(aes (x = expenses),
+                     binwidth = 100,
+                     color = "grey30",
+                     fill = "white")
+  }
+  full_plot  
 }
-
-# theoretical distribution with sample year
-plot_expenses_sample <- function (expenses) {
-  expenses_sim <- data.frame(monthly_expense = expenses_func(12))
-  ggplot(expenses, aes(x = expenses)) +
-    xlim(1800, 5200) +
-    ylim(0, 0.0015) +
-    geom_point(data = expenses_sim,
-               x = expenses_sim$monthly_expense,
-               y=0.00003,
-               color='black',
-               size=5,
-               alpha=0.5) +
-    stat_function(fun = expenses_dens, color = "red") +
-    labs(title = "",
-         subtitle = '',
-         x = "Monthly Cost of Living, in $",
-         y = 'Density')
-}
+plot_expenses(past_expenses,add_density = TRUE, add_theoretical = TRUE, add_histogram = TRUE)
 
 # budget waterflow chart
 budget_waterflow <- function(income, rrsp, taxes, savings, remaining) {
