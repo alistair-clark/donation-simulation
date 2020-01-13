@@ -5,7 +5,6 @@
 - [X] Create one plotting function?
 - [X] Put `fitrdist` in a function? Think about the order
 - [ ] Add facet plot function?
-- [ ] Add `ggsave` to plot functions
 - [ ] Apply D.R.Y. to functions
 - [ ] tidy format code
 - [ ] Add docstrings to functions
