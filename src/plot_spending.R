@@ -22,10 +22,8 @@ library(MASS)
 opt <- docopt(doc)
 
 main <- function(in_file, out_dir) {
-    # Create dataframe with data in budget.csv
+    # Create dataframe with data in spending.csv
     spending_df <- read_csv(in_file, col_names = FALSE)
-    
-    # Add "remaining" column
     spending_df <-
         spending_df %>%
         gather(key = "month", value = "amount")

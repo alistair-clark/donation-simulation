@@ -9,5 +9,5 @@ library(MASS)
 fit_data <- fitdistr(past_expenses[[1]], densfun="lognormal")
 
 # create two functions used in plotting and monte carlo simulation
-expenses_dens <- function(x) dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
-expenses_func <- function(x) rlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+spending_dens <- function(x) dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+spending_func <- function(x) rlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
