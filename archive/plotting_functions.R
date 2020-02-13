@@ -6,26 +6,31 @@ library(scales)
 library(MASS)
 
 # histogram of expenses
-plot_expenses <- function(expenses,
+plot_expenses <- function(df,
                           add_histogram = FALSE,
                           add_density = FALSE,
                           add_theoretical = FALSE,
                           add_simulation = FALSE) {
-  full_plot <- ggplot(expenses,
-                      aes(x = expenses)) +
+  
+  # Create blank plot
+  full_plot <- ggplot(df,
+                      aes(x = amount)) +
     scale_x_continuous(label = dollar,
-                       limits = c(min(expenses) - 500,
-                                  max(expenses) + 500)
+                       limits = c(min(amount) - 500,
+                                  max(amount) + 500)
                        ) +
     labs(
       title = "",
       subtitle = "",
-      x = "Monthly Expenses, in $"
+      x = "Monthly Spending, in $"
       )
   
-  if (!add_density |
-      !add_theoretical |
-      !add_simulation) {
+  # Check if y axis scale needs to be changed to density
+  if (add_density |
+      add_theoretical |
+      add_simulation) {
+    
+    # Add histogram
     if (add_histogram) {
       full_plot <- 
         full_plot +
@@ -34,6 +39,8 @@ plot_expenses <- function(expenses,
                        color = "grey30",
                        fill = "white")
     }
+    
+    # Add density
     if (add_density) {
       full_plot <- 
         full_plot +
@@ -41,10 +48,12 @@ plot_expenses <- function(expenses,
                      alpha = .1,
                      fill = "antiquewhite3") 
     }
+    
+    # For both plots, a fitted distribution is required
     if (add_theoretical | add_simulation) {
       
       # Fit lognormal distribution to the data
-      fit_data <- fitdistr(expenses[[1]], "lognormal")
+      fit_data <- fitdistr(df$amount, "lognormal")
       
       if (add_theoretical) {
         # Create functions to plot lognormal curve on graph
@@ -53,7 +62,7 @@ plot_expenses <- function(expenses,
         # Add lognormal curve to graph
         full_plot <- 
           full_plot +
-          stat_function(aes(x = expenses),
+          stat_function(aes(x = amount),
                         fun = expenses_dens,
                         color = "red")
       }
@@ -78,7 +87,7 @@ plot_expenses <- function(expenses,
   if (add_histogram) {
     full_plot <- 
       full_plot + 
-      geom_histogram(aes (x = expenses),
+      geom_histogram(aes (x = amount),
                      binwidth = 100,
                      color = "grey30",
                      fill = "white")

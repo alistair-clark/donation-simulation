@@ -15,9 +15,9 @@ def inputNumber(message):
         if userInput == 'Y':
             return 'Y'
         try:
-            int(userInput)
+            float(userInput)
         except ValueError:
-            print("Not an integer! Try again.")
+            print("Not a number! Try again.")
             continue
         else:
             return userInput 
