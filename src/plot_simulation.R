@@ -73,7 +73,8 @@ main <- function(in_budget, in_spending, in_donation, out_dir) {
     facet <- ggplot(facet_df, aes(x = result, color = net)) +
         geom_histogram(bins=200, fill="white", alpha=0.5, position="identity") +
         facet_wrap(~percent, ncol = 1) +
-        scale_color_manual(values=c("firebrick4", "forestgreen")) +
+        scale_color_manual(values=c("firebrick4", "forestgreen"),
+                           guide = guide_legend(reverse = TRUE)) +
         geom_vline(aes(xintercept=0)) +
         labs(title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
             x = "Amount over or under budget, in $",
@@ -116,9 +117,11 @@ simulate_multiple <- function(donation_percent, num_simulations, income, remaini
         simulations <- data.frame(iteration = c(1:10000),
                                   result = c(simulate_donation(i, 10000, income, remaining, spending_func)))
         simulations$percent <- paste0(i, "% donated")
+        simulations$name <- i
         df = rbind(df, simulations)
     }
-    df$net <- ifelse(df$result < 0, "Over budget", "Under budget")
+    df$percent <- reorder(df$percent, df$name)
+    df$net <- ifelse(df$result > 0, "Under budget", "Over budget")
     df
 }
 
