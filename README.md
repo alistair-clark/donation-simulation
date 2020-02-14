@@ -7,9 +7,10 @@
 - [X] Add facet plot function
 - [X] Review `plot_simulation` function to simplify
 - [X] Add Make file
+- [X] Add Docker
 - [ ] tidy format code
 - [ ] Add docstrings and comments
-- [X] Add Docker
+- [ ] Create Docker image and update README
 
 
 ### Writing Tasks
@@ -65,11 +66,10 @@ make clean
 Full scripts of this analysis can be found [here](https://github.com/alistair-clark/donation-simulation/tree/master/src).
 
 ## Dependencies
-R version 3.6.2 and R packages:
 
-- tidyverse==1.3.0
-- MASS==7.3.51.5
-- docopt==0.6.1
-- scales==1.1.0
-
-GNU make 3.81
+- R version 3.6.2 and R packages:
+    - tidyverse==1.3.0
+    - MASS==7.3.51.5
+    - docopt==0.6.1
+    - scales==1.1.0
+- GNU make 4.2.1
