@@ -47,6 +47,8 @@ main <- function(in_file, out_dir) {
            filename = paste0(out_dir,"simulation.png"))
 }
 
+
+
 plot_spending <- function(df,
                           add_histogram = FALSE,
                           add_density = FALSE,
@@ -54,17 +56,12 @@ plot_spending <- function(df,
                           add_simulation = FALSE) {
   
   # Create blank plot
-  full_plot <- ggplot(df,
-                      aes(x = amount)) +
+  full_plot <- ggplot(df, aes(x = amount)) +
     scale_x_continuous(label = dollar,
                        limits = c(min(df$amount) - 500,
                                   max(df$amount) + 500)
                        ) +
-    labs(
-      title = "",
-      subtitle = "",
-      x = "Monthly Spending, in $"
-      )
+    labs(x = "Monthly Spending, in $")
   
   # Check if y axis scale needs to be changed to density
   if (add_density |
@@ -82,12 +79,12 @@ plot_spending <- function(df,
         labs(title = "Histogram of Past Monthly Expenses")
     }
     
-    # Add density
+    # Add kernel density
     if (add_density) {
       full_plot <- 
         full_plot +
         geom_density(aes(y = ..density..),
-                     alpha = .1,
+                     alpha = 0.1,
                      fill = "antiquewhite3") 
     }
     
@@ -133,8 +130,7 @@ plot_spending <- function(df,
   if (add_histogram) {
     full_plot <- 
       full_plot + 
-      geom_histogram(aes (x = amount),
-                     binwidth = 100,
+      geom_histogram(binwidth = 100,
                      color = "grey30",
                      fill = "white") +
       labs(title = "Histogram of Past Monthly Expenses",

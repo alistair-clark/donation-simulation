@@ -5,11 +5,10 @@
 - [X] Create one plotting function?
 - [X] Put `fitrdist` in a function? Think about the order
 - [X] Add facet plot function
-- [ ] Review `plot_simulation` function to simplify
-- [ ] Put all plotting in one file? With functions in second file?
+- [X] Review `plot_simulation` function to simplify
+- [X] Add Make file
 - [ ] tidy format code
 - [ ] Add docstrings and comments
-- [X] Add Make file
 - [ ] Add Docker
 
 

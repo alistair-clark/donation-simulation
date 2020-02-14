@@ -13,7 +13,7 @@ figs/budget_waterfall.png : data/budget.csv
 figs/distribution.png figs/histogram.png figs/simulation.png : data/spending.csv
 	Rscript src/plot_spending.R --in_file=data/spending.csv --out_dir=figs/
 
-# Create simulation visualizations
+# Create Monte Carlo simulation visualizations
 figs/donation_sim.png figs/facet.png : data/budget.csv data/spending.csv data/donation.csv
 	Rscript src/plot_simulation.R --in_budget=data/budget.csv --in_spending=data/spending.csv --in_donation=data/donation.csv --out_dir=figs/
 
