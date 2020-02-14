@@ -78,7 +78,8 @@ plot_spending <- function(df,
         geom_histogram(aes(y = ..density..),
                        binwidth = 100,
                        color = "grey30",
-                       fill = "white")
+                       fill = "white") +
+        labs(title = "Histogram of Past Monthly Expenses")
     }
     
     # Add density
@@ -105,7 +106,8 @@ plot_spending <- function(df,
           full_plot +
           stat_function(aes(x = amount),
                         fun = spending_dens,
-                        color = "red")
+                        color = "red") +
+          labs(subtitle = "Red line represents probability distribution of monthly spending")
       }
       if (add_simulation) {
         # simulate 12 months of spending
@@ -120,7 +122,10 @@ plot_spending <- function(df,
                      y=0.00003,
                      color='black',
                      size=5,
-                     alpha=0.5)
+                     alpha=0.5) +
+          labs(title = "Simulated Monthly Expenses for 1 year",
+               subtitle = "Each black dot represents a simulated month of expenses"
+          )
       }
     }
     return(full_plot)
@@ -131,7 +136,9 @@ plot_spending <- function(df,
       geom_histogram(aes (x = amount),
                      binwidth = 100,
                      color = "grey30",
-                     fill = "white")
+                     fill = "white") +
+      labs(title = "Histogram of Past Monthly Expenses",
+       y = "Number of Months")
   }
   full_plot  
 }
