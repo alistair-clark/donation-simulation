@@ -55,7 +55,7 @@ main <- function(in_budget, in_spending, in_donation, out_dir) {
     # Plot chosen donation level
     p <- ggplot(simulations, aes(x = result, colour = net)) +
             geom_histogram(bins=100, fill="white", alpha=0.5, position="identity") +
-            scale_color_manual(values=c("firebrick4", "forestgreen")) +
+            scale_color_manual(values=c("Over budget" = "firebrick4", "Under budget" = "forestgreen")) +
             xlim(-6000, 12000) +
             geom_vline(aes(xintercept=0)) +
             labs(title = paste0('Donation level: ', donation_level, "%"),
@@ -73,7 +73,7 @@ main <- function(in_budget, in_spending, in_donation, out_dir) {
     facet <- ggplot(facet_df, aes(x = result, color = net)) +
         geom_histogram(bins=200, fill="white", alpha=0.5, position="identity") +
         facet_wrap(~percent, ncol = 1) +
-        scale_color_manual(values=c("firebrick4", "forestgreen"),
+        scale_color_manual(values=c("Over budget" = "firebrick4", "Under budget" = "forestgreen"),
                            guide = guide_legend(reverse = TRUE)) +
         geom_vline(aes(xintercept=0)) +
         labs(title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),

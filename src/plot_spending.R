@@ -4,7 +4,7 @@
 "
 Create and save 3 plots of spending. Save plots as a png file.
 
-Usage: plot_budget.R --in_file=<in_file> --out_dir=<out_dir>
+Usage: plot_spending.R --in_file=<in_file> --out_dir=<out_dir>
 
 Options:
     --in_file=<in_file>  Path (including filename) of the budget data (csv).

@@ -51,6 +51,7 @@ main <- function(in_file, out_dir) {
         )
     
     # Create waterfall chart for budget
+    options(scipen=999)
     p <- budget_df %>%
          ggplot(aes(fill = type,
                     x = item,
@@ -65,6 +66,7 @@ main <- function(in_file, out_dir) {
                 x = '',
                 y = "Dollars ($)") +
         scale_y_continuous(labels = dollar) +
+        geom_text(aes(y = end, label = paste0("$", prettyNum(amount, big.mark = ",")), hjust=0.5, vjust=2)) +
         guides(fill = FALSE)
     
     # Save png file
