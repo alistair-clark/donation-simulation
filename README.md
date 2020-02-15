@@ -8,7 +8,7 @@ I've known this number for years, and yet I still find it hard to give consisten
 
 **Budgets are deterministic, but life is stochastic.** Rather than fight against that fact, I decided to embrace it. This project uses a combination of techniques including maximum likelihood estimation and Monte Carlo simulation to help me estimate how much I can actually afford to donate to charity.
 
-##Report
+## Report
 
 [Click here to read the full write-up](/doc/report.html) and find out much I can afford to donate.
 
