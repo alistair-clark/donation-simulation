@@ -19,7 +19,7 @@ figs/sim_one-year.png figs/sim_full.png figs/sim_facet.png : data/budget.csv dat
 
 # Render report
 doc/report.md doc/report.html : doc/report.Rmd
-	Rscript -e "rmarkdown::render('doc/report.Rmd')"
+	Rscript -e "rmarkdown::render('doc/report.Rmd', output_format = 'github_document')"
 
 clean: 
 	rm -rf figs/*
