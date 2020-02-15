@@ -8,15 +8,15 @@
 - [X] Review `plot_simulation` function to simplify
 - [X] Add Make file
 - [X] Add Docker
-- [ ] tidy format code
-- [ ] Add docstrings and comments
-- [ ] Create Docker image and update README
+- [X] Create Docker image and update README
+- [X] tidy format code
+- [X] Add docstrings and comments
 
 
 ### Writing Tasks
 
+- [ ] Write descriptive README˝
 - [ ] Write report using presentation and existing report
-- [ ] Write descriptive README
 
 
 ## Usage

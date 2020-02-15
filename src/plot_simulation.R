@@ -6,7 +6,7 @@ Create and save 2 plots simulating annual donation level using Monte Carlo
 simulation.
 
 Usage:
-    plot_simulation.R --in_budget=<in_budget> --in_spending=<in_spending> --in_donation=<in_donation> --out_dir=<out_dir>
+plot_simulation.R --in_budget=<in_budget> --in_spending=<in_spending> --in_donation=<in_donation> --out_dir=<out_dir>
 
 " -> doc
 
@@ -19,109 +19,164 @@ library(MASS)
 # docopt parsing
 opt <- docopt(doc)
 
-main <- function(in_budget, in_spending, in_donation, out_dir) {
-    # Create dataframe with data in budget.csv
-    budget_df <- read_csv(in_budget,
-                          col_names = c("income", "taxes", "savings"))
-    budget_df <-
-        budget_df %>%
-        mutate(remaining = income - taxes - savings)
-    
-    # Create dataframe with data in spending.csv
-    spending_df <- read_csv(in_spending, col_names = FALSE)
-    spending_df <-
-        spending_df %>%
-        gather(key = "month", value = "amount")
-
-    # Read donation % from .csv
-    donation_df <- read_csv(in_donation, col_names = c('donation'))
-    donation_level <- donation_df$donation
-    
-    # Fit lognormal distribution to the data for use in simulation
-    fit_data <- fitdistr(spending_df$amount, "lognormal")
-    spending_dens <- function(x) dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
-    spending_func <- function(x) rlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
-
-    # Simulate 10,000 years of budget at given donation level
-    num_simulations <- 10000
-    simulations <- data.frame(iteration = c(1:num_simulations),
-                              result = c(simulate_donation(donation_level,
-                                                           num_simulations,
-                                                           budget_df$income, 
-                                                           budget_df$remaining,
-                                                           spending_func)))
-    simulations$net <- ifelse(simulations$result < 0, "Over budget", "Under budget")
-
-    # Plot chosen donation level
-    p <- ggplot(simulations, aes(x = result, colour = net)) +
-            geom_histogram(bins=100, fill="white", alpha=0.5, position="identity") +
-            scale_color_manual(values=c("Over budget" = "firebrick4", "Under budget" = "forestgreen")) +
-            geom_vline(aes(xintercept=0)) +
-            labs(title = paste0('Donation level: ', donation_level, "%"),
-                x = "Amount over or under budget, in $",
-                y = "Count of simulated years",
-                colour = '') +
-            theme(legend.position="top")
-
-    # Simulate 10,000 years of budget at multiple donation levels (5%, 10% ... 30%)
-    facet_df <- simulate_multiple(donation_level,
-                                  num_simulations,
-                                  budget_df$income,
-                                  budget_df$remaining,
-                                  spending_func)
-    
-    # Plot facet with multiple donation levels
-    facet <- ggplot(facet_df, aes(x = result, color = net)) +
-        geom_histogram(bins=200, fill="white", alpha=0.5, position="identity") +
-        facet_wrap(~percent, ncol = 1) +
-        scale_color_manual(values=c("Over budget" = "firebrick4", "Under budget" = "forestgreen"),
-                           guide = guide_legend(reverse = TRUE)) +
-        geom_vline(aes(xintercept=0)) +
-        labs(title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
-            x = "Amount over or under budget, in $",
-            y = "Count of simulated years",
-            colour = '')
-    
-    # Save png files
-    ggsave(plot = p,
-           filename = paste0(out_dir,"donation_sim.png"))
-    ggsave(plot = facet,
-           filename = paste0(out_dir,"facet.png"))
+main <- function(in_budget,
+                 in_spending,
+                 in_donation,
+                 out_dir) {
+  # Create dataframe with data in budget.csv
+  budget_df <- read_csv(in_budget,
+                        col_names = c("income", "taxes", "savings"))
+  budget_df <-
+    budget_df %>%
+    mutate(remaining = income - taxes - savings)
+  
+  # Create dataframe with data in spending.csv
+  spending_df <- read_csv(in_spending, col_names = FALSE)
+  spending_df <-
+    spending_df %>%
+    gather(key = "month", value = "amount")
+  
+  # Read donation % from donation.csv
+  donation_df <- read_csv(in_donation, col_names = c('donation'))
+  donation_level <- donation_df$donation
+  
+  # Fit lognormal distribution to the data using maximum-likelihood estimation
+  fit_data <- fitdistr(spending_df$amount, "lognormal")
+  spending_dens <-
+    function(x)
+      dlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+  spending_func <-
+    function(x)
+      rlnorm(x, fit_data$estimate[1], fit_data$estimate[2])
+  
+  # Simulate 10,000 years of the annual budget
+  num_years <- 10000
+  simulations <- data.frame(
+    iteration = c(1:num_years),
+    result = c(
+      simulate_donation(
+        donation_level,
+        num_years,
+        budget_df$income,
+        budget_df$remaining,
+        spending_func
+      )
+    )
+  )
+  simulations$net <-
+    ifelse(simulations$result < 0, "Over budget", "Under budget")
+  
+  # Plot simulation results
+  p <- ggplot(simulations, aes(x = result, colour = net)) +
+    geom_histogram(
+      bins = 100,
+      fill = "white",
+      alpha = 0.5,
+      position = "identity"
+    ) +
+    scale_color_manual(values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen")) +
+    geom_vline(aes(xintercept = 0)) +
+    labs(
+      title = paste0('Donation level: ', donation_level, "%"),
+      x = "Amount over or under budget, in $",
+      y = "Count of simulated years",
+      colour = ''
+    ) +
+    theme(legend.position = "top")
+  
+  # Simulate 10,000 years of budget at multiple other donation levels (5%, 10% ... 30%)
+  donation_levels <- seq(5, 30, 5)
+  facet_df <- simulate_multiple(
+    donation_levels,
+    num_years,
+    budget_df$income,
+    budget_df$remaining,
+    spending_func
+  )
+  
+  # Plot facet with multiple donation levels
+  facet <- ggplot(facet_df, aes(x = result, color = net)) +
+    geom_histogram(
+      bins = 200,
+      fill = "white",
+      alpha = 0.5,
+      position = "identity"
+    ) +
+    facet_wrap(~ percent, ncol = 1) +
+    scale_color_manual(
+      values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen"),
+      guide = guide_legend(reverse = TRUE)
+    ) +
+    geom_vline(aes(xintercept = 0)) +
+    labs(
+      title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
+      x = "Amount over or under budget, in $",
+      y = "Count of simulated years",
+      colour = ''
+    )
+  
+  # Save png files
+  ggsave(plot = p,
+         filename = paste0(out_dir, "donation_sim.png"))
+  ggsave(plot = facet,
+         filename = paste0(out_dir, "facet.png"))
 }
 
-
-
-
-#' Simulates 12 months of expenses for a given number of years
+#' Simulate annual budget surplus / defecit.
 #'
+#' @param donation_percent % of income donated to charity
 #' @param num_years The number of years to simulate
+#' @param income Total income (i.e. salary)
+#' @param remaining Total income remaining after taxes and savings
+#' @param spending_func Log-normal distribution, specified using MLE
 #'
-#' @return Budget remaining after subtracting cost of living
-#' @export
+#' @return dataframe of budget surplus/deficit for each simulated year
 #'
 #' @examples
-#' simulate_year(100)
-# simulate_year <- function(num_years, remaining, spending_func) {
-  
-# }
+#' simulate_donation(10, 10000, 100000, 50000, log_normal)
+simulate_donation <-
+  function(donation_percent,
+           num_years,
+           income,
+           remaining,
+           spending_func) {
+    replicate(n = num_years,
+              remaining - sum(spending_func(12)),
+              simplify = TRUE) - donation_percent / 100 * income
+  }
 
-
-simulate_donation <- function(donation_percent, num_years, income, remaining, spending_func) {
-  replicate(n = num_years, remaining - sum(spending_func(12)), simplify = TRUE) - donation_percent/100 * income
-}
-
-simulate_multiple <- function(donation_percent, num_simulations, income, remaining, spending_func) {
+#' Simulate annual budget surplus / defecit at multiple
+#' donation levels.
+#'
+#' @param donation_range Vector of donation levels to simulate. 
+#' @param num_years The number of years to simulate
+#' @param income Total income (i.e. salary)
+#' @param remaining Total income remaining after taxes and savings
+#' @param spending_func Log-normal distribution, specified using MLE
+#'
+#' @return dataframe of budget surplus/deficit for each simulated year
+#'
+#' @examples
+#' simulate_multiple(seq(5, 30, 5), 10000, 100000, 50000, log_normal)
+simulate_multiple <-
+  function(donation_range,
+           num_years,
+           income,
+           remaining,
+           spending_func) {
     df = NULL
-    for (i in seq(5, 30, 5)) {
-        simulations <- data.frame(iteration = c(1:10000),
-                                  result = c(simulate_donation(i, 10000, income, remaining, spending_func)))
-        simulations$percent <- paste0(i, "% donated")
-        simulations$name <- i
-        df = rbind(df, simulations)
+    for (i in donation_range) {
+      simulations <- data.frame(iteration = c(1:num_years),
+                                result = c(
+                                  simulate_donation(i, num_years, income, remaining, spending_func)
+                                ))
+      simulations$percent <- paste0(i, "% donated")
+      simulations$name <- i
+      df = rbind(df, simulations)
     }
     df$percent <- reorder(df$percent, df$name)
     df$net <- ifelse(df$result > 0, "Under budget", "Over budget")
     df
-}
+  }
 
 main(opt[["--in_budget"]], opt[["--in_spending"]], opt[["--in_donation"]], opt[["--out_dir"]])
