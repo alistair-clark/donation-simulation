@@ -1,6 +1,5 @@
-*.Rproj
 .Rhistory
 .RData
 .Ruserdata
-/archive
+./archive
 .Rproj.user
