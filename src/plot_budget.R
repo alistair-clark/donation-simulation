@@ -82,7 +82,10 @@ main <- function(in_file, out_dir) {
   
   # Save png file
   ggsave(plot = p,
-         filename = paste0(out_dir, "budget_waterfall.png"))
+         filename = paste0(out_dir, "budget_waterfall.png"),
+         width = 7,
+         height = 5
+        )
 }
 
 main(opt[["--in_file"]], opt[["--out_dir"]])

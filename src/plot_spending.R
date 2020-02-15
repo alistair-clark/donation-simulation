@@ -40,11 +40,17 @@ main <- function(in_file, out_dir) {
   
   # Save png files
   ggsave(plot = hist,
-         filename = paste0(out_dir, "histogram.png"))
+         filename = paste0(out_dir, "histogram.png"),
+         width = 7,
+         height = 5)
   ggsave(plot = dist,
-         filename = paste0(out_dir, "distribution.png"))
+         filename = paste0(out_dir, "distribution.png"),
+         width = 7,
+         height = 5)
   ggsave(plot = sim,
-         filename = paste0(out_dir, "simulation.png"))
+         filename = paste0(out_dir, "simulation.png"),
+         width = 7,
+         height = 5)
 }
 
 
@@ -138,9 +144,10 @@ plot_spending <- function(df,
             x = spending_sim$monthly_spending,
             y = 0.00003,
             color = 'black',
-            size = 5,
+            size = 3,
             alpha = 0.5
           ) +
+          ylim(0, 0.0014) +
           labs(title = "Simulated Monthly Expenses for 1 year",
                subtitle = "Each black dot represents a simulated month of expenses")
       }

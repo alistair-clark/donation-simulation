@@ -1,12 +1,22 @@
 ---
 title: "How much of my salary can I afford to donate to charity?"
-subtitle: "Using Monte Carlo simulation and Maximum Likelihood Estimation to tackle the uncertainty of life"
+subtitle: "Using Monte Carlo simulation and Maximum Likelihood Estimation to tackle the uncertainty of life</br>"
 author: "Alistair Clark"
-date: '2020-02-15'
+date: "2019/12/30 (updated: `r Sys.Date()`)"
+always_allow_html: true
 output: 
+  html_document:
+    toc: false
   github_document:
-    toc: true
+    toc: false
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+```
+
+***
 
 It costs \$2,196 to save a life.
 
@@ -29,8 +39,9 @@ I’ll start by creating a basic budget with some fixed values that will not cha
 
 For simplicity, I’ll estimate an annual salary of \$100,000. My spouse and I are financially conservative, so I’ll put aside 25% into an RRSP, or \\$25,000. Next, I’ll calculate my taxes using this online calculator from SimpleTax. Taxes work out to \$20,727 per year.
 
-![budget waterfall](../figs/budget_waterfall.png) 
- Figure 1 Fixed components of my annial budget.
+```{r budget-waterfall, echo=FALSE, fig.cap="Figure 1 Fixed components of my annial budget."}
+knitr::include_graphics("../figs/budget_waterfall.png")
+```
  
 After taxes, and savings, I’m left with \$54,273. This is the pool of money I have available for daily living expenses and charitable donations.
  
@@ -40,8 +51,9 @@ In the classic approach to budgeting, my next step would be to continue the wate
  
 Here's a snapshot of my monthly expenses for the last 24 months.
  
-![spending histogram](../figs/histogram.png)
- Figure 2 Histogram of past expenses.
+```{r spending-histogram, echo=FALSE, fig.cap="Figure 2 Histogram of past expenses."}
+knitr::include_graphics("../figs/histogram.png")
+```
 
 The classic approach to budgeting would be to take the average of these values, \$2,886, and plug it into my budget. That would tell me how much money I have available to donate to charity, but it ignores the inherent uncertainty of my cost of living.
 - What if I have a few bad spending months because all of my friends decide to get married in the same year?
@@ -54,40 +66,39 @@ In Monte Carlo models, not every variable has to be a single fixed number. Inste
 
 To apply Monte Carlo simulation to my budget, I need to turn the "variable" that estimates my monthly expenses into a probability distribution that represents a range of possible numbers and the probability of each. After experimenting with various distributions, I found that a log-normal distribution with a mean of 7.95 and standard deviation of 0.19 is a good representation of my cost of living.
 
-![fit distribution](../figs/distribution.png)
- Figure 3 Lognormal distribution fit to data using maximum likelihood estimation.
-
+```{r spending-distribution, echo=FALSE, fig.cap="Figure 3 Lognormal distribution fit to data using maximum likelihood estimation."}
+knitr::include_graphics("../figs/distribution.png")
+```
+ 
 Now that I have this distribution, I can use it to simulate a year of expenses by randomly selecting 12 numbers from the distribution.
 
-![simulated expenses](../figs/simulation.png)
+```{r spending-simulated, echo=FALSE, fig.cap="Figure 4 12 months of simulated expenses from lognormal distribution."}
+knitr::include_graphics("../figs/simulation.png")
+```
 
- Figure 4 12 months of simulated expenses from lognormal distribution.
- 
 ## Step 3: Calculate my optimum donation level
 
-Alright, I have everything I need to calculate how much I can afford to donate. Each time I run my model it simulates one year of expenses and returns how much I am over or under budget. For example, below is a simulation of a single year where I donated 15% to charity. The x-axis shows how much I am over or under budget, the black vertical line shows the break even point, and the y-axis shows the number of years. In this year I was about \$6,000 under budget.
+Alright, I have everything I need to calculate how much I can afford to donate. Each time I run my model it simulates one year of expenses and returns how much I am over or under budget. For example, below is a simulation of a single year where I donated 15% to charity. The x-axis shows how much I am over or under budget, the black vertical line shows the break even point, and the y-axis shows the number of years. The green bar representshow much I was under budget in this one simulated year.
 
-![one year simulation](../figs/simulation_15-percent-one.png)
+```{r simulation-one-year, echo=FALSE, fig.cap="Figure 5 Example of one year of simulated data."}
+knitr::include_graphics("../figs/sim_one-year.png")
+```
 
- Figure 5 Example of one year of simulated data.
- 
 But with Monte Carlo, I don’t just simulate one year. Instead, I simulate thousands of years. The result is a visual of how often a certain donation level results in being over or under budget. Here’s a simulation of 10,000 years using the same 15% donation level.
 
-![10,000 year simulation](../figs/donation_sim.png)
- Figure 5 Example of one year of simulated data.
+```{r simulation-10000, echo=FALSE, fig.cap="Figure 6 Example of 10,000 years of simulated data."}
+knitr::include_graphics("../figs/sim_full.png")
+```
  
 Most years hover around \$5,000 under budget, but they range quite a bit, from around \\$3,000 over budget on the far left, to \$10,000 under budget on the far right. Out of 10,000 simulated years, only a few were over budget (around 1%).
 
 I’m financially conservative, so I want a donation level that results in 0% of years being over budget. To find that number I can re-run this simulation at various donation levels.
 
-![10,000 year simulation](../figs/facet.png)
- Figure 6 Simulation at multiple donation levels.
+```{r simulation-facet, echo=FALSE, fig.cap="Figure 7 Simulation at multiple donation levels."}
+knitr::include_graphics("../figs/sim_facet.png")
+```
 
 After running multiple simulations, I found that **11% annual donations** is the number that results in zero years going over budget.
-
-![11% donation](../figs/simulation_11-percent.png)
- 
- Figure 7 Simulation at 11% donation level.
 
 That’s \$11,000 donated to charity, or 5 lives saved per year.
 

@@ -51,23 +51,22 @@ main <- function(in_budget,
   
   # Simulate 10,000 years of the annual budget
   num_years <- 10000
-  simulations <- data.frame(
-    iteration = c(1:num_years),
-    result = c(
-      simulate_donation(
-        donation_level,
-        num_years,
-        budget_df$income,
-        budget_df$remaining,
-        spending_func
-      )
-    )
-  )
+  simulations <- data.frame(iteration = c(1:num_years),
+                            result = c(
+                              simulate_donation(
+                                donation_level,
+                                num_years,
+                                budget_df$income,
+                                budget_df$remaining,
+                                spending_func
+                              )
+                            ))
   simulations$net <-
     ifelse(simulations$result < 0, "Over budget", "Under budget")
   
-  # Plot simulation results
-  p <- ggplot(simulations, aes(x = result, colour = net)) +
+  # Plot single year of simulation
+  one_year <-
+    ggplot(simulations[1, ], aes(x = result, colour = net)) +
     geom_histogram(
       bins = 100,
       fill = "white",
@@ -75,51 +74,82 @@ main <- function(in_budget,
       position = "identity"
     ) +
     scale_color_manual(values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen")) +
-    geom_vline(aes(xintercept = 0)) +
-    labs(
-      title = paste0('Donation level: ', donation_level, "%"),
-      x = "Amount over or under budget, in $",
-      y = "Count of simulated years",
-      colour = ''
-    ) +
-    theme(legend.position = "top")
-  
-  # Simulate 10,000 years of budget at multiple other donation levels (5%, 10% ... 30%)
-  donation_levels <- seq(5, 30, 5)
-  facet_df <- simulate_multiple(
-    donation_levels,
-    num_years,
-    budget_df$income,
-    budget_df$remaining,
-    spending_func
+    scale_x_continuous(label = scales::dollar,
+                       limits = c(min(simulations$result) + 500,
+                                  max(simulations$result) + 500)) +
+  geom_vline(aes(xintercept = 0)) +
+  labs(
+    title = paste0('Donation level: ', donation_level, "%"),
+    x = "Amount over or under budget, in $",
+    y = "Count of simulated years",
+    colour = ''
+  ) +
+  theme(legend.position = "top")
+
+# Plot simulation results
+all_years <- ggplot(simulations, aes(x = result, colour = net)) +
+  geom_histogram(
+    bins = 100,
+    fill = "white",
+    alpha = 0.5,
+    position = "identity"
+  ) +
+  scale_color_manual(values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen")) +
+  scale_x_continuous(label = scales::dollar) +
+  geom_vline(aes(xintercept = 0)) +
+  labs(
+    title = paste0('Donation level: ', donation_level, "%"),
+    x = "Amount over or under budget, in $",
+    y = "Count of simulated years",
+    colour = ''
+  ) +
+  theme(legend.position = "top")
+
+# Simulate 10,000 years of budget at multiple other donation levels (5%, 10% ... 30%)
+donation_levels <- seq(5, 30, 5)
+facet_df <- simulate_multiple(
+  donation_levels,
+  num_years,
+  budget_df$income,
+  budget_df$remaining,
+  spending_func
+)
+
+# Plot facet with multiple donation levels
+facet <- ggplot(facet_df, aes(x = result, color = net)) +
+  geom_histogram(
+    bins = 200,
+    fill = "white",
+    alpha = 0.5,
+    position = "identity"
+  ) +
+  facet_wrap(~ percent, ncol = 1) +
+  scale_color_manual(
+    values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen"),
+    guide = guide_legend(reverse = TRUE)
+  ) +
+  scale_x_continuous(label = scales::dollar) +
+  geom_vline(aes(xintercept = 0)) +
+  labs(
+    title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
+    x = "Amount over or under budget, in $",
+    y = "Count of simulated years",
+    colour = ''
   )
-  
-  # Plot facet with multiple donation levels
-  facet <- ggplot(facet_df, aes(x = result, color = net)) +
-    geom_histogram(
-      bins = 200,
-      fill = "white",
-      alpha = 0.5,
-      position = "identity"
-    ) +
-    facet_wrap(~ percent, ncol = 1) +
-    scale_color_manual(
-      values = c("Over budget" = "firebrick4", "Under budget" = "forestgreen"),
-      guide = guide_legend(reverse = TRUE)
-    ) +
-    geom_vline(aes(xintercept = 0)) +
-    labs(
-      title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
-      x = "Amount over or under budget, in $",
-      y = "Count of simulated years",
-      colour = ''
-    )
-  
-  # Save png files
-  ggsave(plot = p,
-         filename = paste0(out_dir, "donation_sim.png"))
-  ggsave(plot = facet,
-         filename = paste0(out_dir, "facet.png"))
+
+# Save png files
+ggsave(plot = one_year,
+       filename = paste0(out_dir, "sim_one-year.png"),
+       width = 7,
+       height = 5)
+ggsave(plot = all_years,
+       filename = paste0(out_dir, "sim_full.png"),
+       width = 7,
+       height = 5)
+ggsave(plot = facet,
+       filename = paste0(out_dir, "sim_facet.png"),
+       width = 7,
+       height = 7)
 }
 
 #' Simulate annual budget surplus / defecit.
@@ -148,7 +178,7 @@ simulate_donation <-
 #' Simulate annual budget surplus / defecit at multiple
 #' donation levels.
 #'
-#' @param donation_range Vector of donation levels to simulate. 
+#' @param donation_range Vector of donation levels to simulate.
 #' @param num_years The number of years to simulate
 #' @param income Total income (i.e. salary)
 #' @param remaining Total income remaining after taxes and savings
