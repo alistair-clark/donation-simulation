@@ -1,4 +1,5 @@
 # How much of my salary can I afford to donate to charity?
+Using Monte Carlo simulation and Maximum Likelihood Estimation to tackle the uncertainty of life
 
 Author: Alistair Clark
 ***
