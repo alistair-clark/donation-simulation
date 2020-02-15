@@ -34,19 +34,19 @@ To replicate the analysis, please follow the instruction:
 3. Download the docker image using the following command at the command line/terminal:
 
 ```
-docker pull ***TODO***
+docker pull alistairjlclark/donation-simulation:latest
 ```
 
 4. To replicate the analysis, navigate to the root directory of this project using the command line/terminal, and run the following command:
 
 ```
-docker run --rm -v /$(pwd):/donation-simulation test make -C 'donation-simulation' all
+docker run --rm -v /$(pwd):/donation-simulation alistairjlclark/donation-simulation:latest make -C 'donation-simulation' all
 ```
 
 5. To reset this repository to a clean state, with no intermediate or results files, run the following command at the command line/terminal from the root directory of this project:
 
 ```
-docker run --rm -v /$(pwd):/donation-simulation ***TODO*** make -C 'donation-simulation' clean
+docker run --rm -v /$(pwd):/donation-simulation alistairjlclark/donation-simulation:latest make -C 'donation-simulation' clean
 ```
 
 #### 2. Without using Docker
