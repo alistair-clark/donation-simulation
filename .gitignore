@@ -3,3 +3,4 @@
 .Ruserdata
 archive/
 .Rproj.user
+src/inputs.py
