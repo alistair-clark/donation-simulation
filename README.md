@@ -2,7 +2,7 @@
 
 Author: Alistair Clark
 ***
-It costs $2,196 to save a human life[<sup>1</sup>](#footnote).
+It costs $2,196 to save a human life[<sup>1</sup>](##footnote).
 
 I've known this number for years, and yet I still find it hard to give consistently. No matter how detailed my budget, it seems like every month an unexpected expense pops up and derails my plans to donate -- a last minute wedding gift, replacing the car airconditioner, or an emergency vet bill.
 
