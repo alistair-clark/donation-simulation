@@ -11,7 +11,7 @@ I've known this number for years, and yet I still find it hard to give consisten
 
 ## Report
 
-[Click here to read the full write-up](/doc/report.html) and find out much I can afford to donate.
+[Click here to read the full write-up](/doc/report.md) and find out much I can afford to donate.
 
 ## Next steps for this project:
 
