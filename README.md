@@ -1,29 +1,27 @@
-# donation-simulation
+# How much of my salary can I afford to donate to charity?
 
-### Code Tasks
+Author: Alistair Clark
+***
+It costs $2,196 to save a human life[<sup>1</sup>](#footnote).
 
-- [X] Create one plotting function?
-- [X] Put `fitrdist` in a function? Think about the order
-- [X] Add facet plot function
-- [X] Review `plot_simulation` function to simplify
-- [X] Add Make file
-- [X] Add Docker
-- [X] Create Docker image and update README
-- [X] tidy format code
-- [X] Add docstrings and comments
+I've known this number for years, and yet I still find it hard to give consistently. No matter how detailed my budget, it seems like every month an unexpected expense pops up and derails my plans to donate -- a last minute wedding gift, replacing the car airconditioner, or an emergency vet bill.
 
+**Budgets are deterministic, but life is stochastic.** Rather than fight against that fact, I decided to embrace it. This project uses a combination of techniques including maximum likelihood estimation and Monte Carlo simulation to help me estimate how much I can actually afford to donate to charity.
 
-### Writing Tasks
+##Report
 
-- [ ] Write descriptive README˝
-- [ ] Write report using presentation and existing report
+[Click here to read the full write-up](/doc/report.html) and find out much I can afford to donate.
 
+## Next steps for this project:
+
+- [ ] Share article with data science publications
+- [ ] Create a web app that allows others to run the same analysis
 
 ## Usage
 
 There are two ways to run this analysis:
 
-#### 1. Use Docker
+### 1. Use Docker
 
 *Note: the following instructions depend on running this in a unix shell (e.g., terminal or Git Bash). Windows users may have to use Git Bash, set Docker to use Linux containers, and have shared their drives with Docker.*
 
@@ -49,7 +47,7 @@ docker run --rm -v /$(pwd):/donation-simulation alistairjlclark/donation-simulat
 docker run --rm -v /$(pwd):/donation-simulation alistairjlclark/donation-simulation:latest make -C 'donation-simulation' clean
 ```
 
-#### 2. Without using Docker
+### 2. Without using Docker
 
 To replicate the analysis, clone this GitHub repository, install the dependencies listed below, and run the following commands at the command line/terminal from the root directory of this project:
 
@@ -65,7 +63,7 @@ make clean
 
 Full scripts of this analysis can be found [here](https://github.com/alistair-clark/donation-simulation/tree/master/src).
 
-## Dependencies
+#### Dependencies
 
 - R version 3.6.2 and R packages:
     - tidyverse==1.3.0
@@ -73,3 +71,7 @@ Full scripts of this analysis can be found [here](https://github.com/alistair-cl
     - docopt==0.6.1
     - scales==1.1.0
 - GNU make 4.2.1
+
+## Footnotes
+
+1.  [GiveWell: _Giving 101: The Basics_](https://www.givewell.org/giving101#footnote1_1dmjnp5)
