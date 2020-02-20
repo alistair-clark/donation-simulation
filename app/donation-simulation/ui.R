@@ -1,0 +1,94 @@
+
+library(shiny)
+library(markdown)
+library(rhandsontable)
+
+# Define UI for application that draws a histogram
+shinyUI(fluidPage(
+  
+  # Application title
+  titlePanel("How much can you afford to donate to charity?"),
+  
+  # Add Navigation Bar
+  navbarPage("",
+             tabPanel("Step 1: Create a basic budget",
+                      sidebarLayout(
+                        sidebarPanel(
+                          h4("Fill in the below:"),
+                          numericInput("income", label = "Income:", value = 100000),
+                          numericInput("taxes", label = "Taxes:", value = 30000),
+                          numericInput("savings", label = "Savings:", value = 15000),
+                          helpText("Note: you can calculate taxes using an online calculator and enter the result above.")
+                        
+                      ),
+                      mainPanel(
+                        plotOutput("budget")
+                      ))
+                      ),
+             tabPanel("Step 2: Add past expenses",
+                      sidebarLayout(
+                        sidebarPanel(
+                          h4("Add past expenses:"),
+                          helpText("Fill out the table and then click the 'Save' button."),
+                          actionButton("save", "Save table")
+                        ),
+                        mainPanel(
+                          tabsetPanel(type = "tabs",
+                                      tabPanel("Visual", 
+                                               plotOutput("spending")
+                                               ),
+                                      tabPanel("Inputs",
+                                               rHandsontableOutput("table")
+                                      )
+                        )
+                        )
+                      )
+                      ),
+             
+             tabPanel("Step 3: Simulate your donations",
+                      sidebarLayout(
+                        sidebarPanel(
+                          h4("TBD:"),
+                          numericInput("donation", label = "Donation (as % of income):", value = 15)
+                        ),
+                        mainPanel(
+                          plotOutput("plot")
+                          )
+                        )
+                      )
+             )
+  )
+)
+
+  
+# navbarPage("Navbar!",
+#            tabPanel("Plot",
+#                     sidebarLayout(
+#                       sidebarPanel(
+#                         radioButtons("plotType", "Plot type",
+#                                      c("Scatter"="p", "Line"="l")
+#                         )
+#                       ),
+#                       mainPanel(
+#                         plotOutput("plot")
+#                       )
+#                     )
+#            )
+# )
+  
+  
+  
+  
+  # # Sidebar with a slider input for number of bins 
+  # sidebarLayout(
+  #   sidebarPanel(
+  #      sliderInput("bins",
+  #                  "Number of bins:",
+  #                  min = 1,
+  #                  max = 50,
+  #                  value = 30)
+  #   ),
+  #   
+  #   # Show a plot of the generated distribution
+  #   mainPanel(
+  #      plotOutput("distPlot")
