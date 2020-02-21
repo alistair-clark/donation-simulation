@@ -16,8 +16,8 @@ shinyUI(fluidPage(
                         sidebarPanel(
                           h4("Fill in the below:"),
                           numericInput("income", label = "Income:", value = 100000),
-                          numericInput("taxes", label = "Taxes:", value = 30000),
-                          numericInput("savings", label = "Savings:", value = 15000),
+                          numericInput("taxes", label = "Taxes:", value = 20727),
+                          numericInput("savings", label = "Savings:", value = 25000),
                           helpText("Note: you can calculate taxes using an online calculator and enter the result above.")
                         
                       ),
@@ -30,18 +30,12 @@ shinyUI(fluidPage(
                         sidebarPanel(
                           h4("Add past expenses:"),
                           helpText("Fill out the table and then click the 'Save' button."),
-                          actionButton("save", "Save table")
+                          rHandsontableOutput("hot"),
+                          actionButton("go", "Plot Update")
                         ),
-                        mainPanel(
-                          tabsetPanel(type = "tabs",
-                                      tabPanel("Visual", 
-                                               plotOutput("spending")
-                                               ),
-                                      tabPanel("Inputs",
-                                               rHandsontableOutput("table")
-                                      )
-                        )
-                        )
+                        mainPanel(plotOutput("histogram"),
+                                  plotOutput("distribution"),
+                                  plotOutput("simulation"))
                       )
                       ),
              
@@ -52,7 +46,8 @@ shinyUI(fluidPage(
                           numericInput("donation", label = "Donation (as % of income):", value = 15)
                         ),
                         mainPanel(
-                          plotOutput("plot")
+                          plotOutput("donation_plot"),
+                          plotOutput("facet")
                           )
                         )
                       )
