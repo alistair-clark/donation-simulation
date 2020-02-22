@@ -1,5 +1,20 @@
+# author: Alistair Clark
+# date: 2020-02-22
+# Contains helper functions required to run the donation-simulation project.
+
+#################################################################################
+# Plotting functions
+#################################################################################
+
+#' Create waterfall plot of budget.
+#'
+#' @param df Dataframe containing 'income', 'taxes', and 'savings'
+#'
+#' @return ggplot Waterfall plot of budget.
+#'
+#' @examples
+#' budget_waterfall(budget_df)
 budget_waterfall <- function(df) {
-  library(scales)
   # Add "remaining" column
   df <-
     df %>%
@@ -53,67 +68,6 @@ budget_waterfall <- function(df) {
     )) +
     guides(fill = FALSE)
 }
-
-
-
-
-#' Simulate annual budget surplus / defecit.
-#'
-#' @param donation_percent % of income donated to charity
-#' @param num_years The number of years to simulate
-#' @param income Total income (i.e. salary)
-#' @param remaining Total income remaining after taxes and savings
-#' @param spending_func Log-normal distribution, specified using MLE
-#'
-#' @return dataframe of budget surplus/deficit for each simulated year
-#'
-#' @examples
-#' simulate_donation(10, 10000, 100000, 50000, log_normal)
-simulate_donation <-
-  function(donation_percent,
-           num_years,
-           income,
-           remaining,
-           spending_func) {
-    replicate(n = num_years,
-              remaining - sum(spending_func(12)),
-              simplify = TRUE) - donation_percent / 100 * income
-  }
-
-#' Simulate annual budget surplus / defecit at multiple
-#' donation levels.
-#'
-#' @param donation_range Vector of donation levels to simulate.
-#' @param num_years The number of years to simulate
-#' @param income Total income (i.e. salary)
-#' @param remaining Total income remaining after taxes and savings
-#' @param spending_func Log-normal distribution, specified using MLE
-#'
-#' @return dataframe of budget surplus/deficit for each simulated year
-#'
-#' @examples
-#' simulate_multiple(seq(5, 30, 5), 10000, 100000, 50000, log_normal)
-simulate_multiple <-
-  function(donation_range,
-           num_years,
-           income,
-           remaining,
-           spending_func) {
-    df = NULL
-    for (i in donation_range) {
-      simulations <- data.frame(iteration = c(1:num_years),
-                                result = c(
-                                  simulate_donation(i, num_years, income, remaining, spending_func)
-                                ))
-      simulations$percent <- paste0(i, "% donated")
-      simulations$name <- i
-      df = rbind(df, simulations)
-    }
-    df$percent <- reorder(df$percent, df$name)
-    df$net <- ifelse(df$result > 0, "Under budget", "Over budget")
-    df
-  }
-
 
 #' Wrapper function for plotting multiple variations of the same plot.
 #'
@@ -228,6 +182,19 @@ plot_spending <- function(df,
   full_plot
 }
 
+#' Plot results of Monte Carlo simulation.
+#' 
+#' Plot shows a histogram of the amount over / under budget
+#' for each year in the simulation.
+#'
+#' @param df Dataframe with outpouts from `simulate` function
+#' @param donation_level % of income to donate to charity
+#' @param one_year TRUE if only showing one simulated year
+#'
+#' @return ggplot histogram of simulated values.
+#'
+#' @examples
+#' plot_simulation(simulations_df, 15)
 plot_simulation <- function(df, donation_level, one_year = FALSE) {
   if (one_year == TRUE) {
     df2 <- df[1, ]
@@ -255,6 +222,15 @@ plot_simulation <- function(df, donation_level, one_year = FALSE) {
     theme(legend.position = "top")
 }
 
+#' Create facet plot showing multiple simulations.
+#'
+#' @param budget_df Dataframe contianing 'income', 'taxes', and 'savings'
+#' @param spending_df Dataframe containing column of monthly spending.
+#'
+#' @return ggplot Facet plot showing histogram at multiple donation levels
+#'
+#' @examples
+#' plot_facet(budget_df, spending_df)
 plot_facet <- function(budget_df, spending_df) {
   fit_data <- fitdistr(spending_df$amount, "lognormal")
   spending_func <-
@@ -291,6 +267,79 @@ plot_facet <- function(budget_df, spending_df) {
 }
 
 
+#################################################################################
+# Simulation functions
+#################################################################################
+
+#' Simulate annual budget surplus / defecit.
+#'
+#' @param donation_percent % of income donated to charity
+#' @param num_years The number of years to simulate
+#' @param income Total income (i.e. salary)
+#' @param remaining Total income remaining after taxes and savings
+#' @param spending_func Log-normal distribution, specified using MLE
+#'
+#' @return dataframe of budget surplus/deficit for each simulated year
+#'
+#' @examples
+#' simulate_donation(10, 10000, 100000, 50000, log_normal)
+simulate_donation <-
+  function(donation_percent,
+           num_years,
+           income,
+           remaining,
+           spending_func) {
+    replicate(n = num_years,
+              remaining - sum(spending_func(12)),
+              simplify = TRUE) - donation_percent / 100 * income
+  }
+
+#' Simulate annual budget surplus / defecit at multiple
+#' donation levels.
+#'
+#' @param donation_range Vector of donation levels to simulate.
+#' @param num_years The number of years to simulate
+#' @param income Total income (i.e. salary)
+#' @param remaining Total income remaining after taxes and savings
+#' @param spending_func Log-normal distribution, specified using MLE
+#'
+#' @return dataframe of budget surplus/deficit for each simulated year
+#'
+#' @examples
+#' simulate_multiple(seq(5, 30, 5), 10000, 100000, 50000, log_normal)
+simulate_multiple <-
+  function(donation_range,
+           num_years,
+           income,
+           remaining,
+           spending_func) {
+    df = NULL
+    for (i in donation_range) {
+      simulations <- data.frame(iteration = c(1:num_years),
+                                result = c(
+                                  simulate_donation(i, num_years, income, remaining, spending_func)
+                                ))
+      simulations$percent <- paste0(i, "% donated")
+      simulations$name <- i
+      df = rbind(df, simulations)
+    }
+    df$percent <- reorder(df$percent, df$name)
+    df$net <- ifelse(df$result > 0, "Under budget", "Over budget")
+    df
+  }
+
+
+
+#' Monte Carlo simulation of budget
+#'
+#' @param spending_df Dataframe containing column of monthly spending.
+#' @param budget_df Dataframe contianing 'income', 'taxes', and 'savings'
+#' @param donation_level % of income to donate to charity
+#'
+#' @return df simulated budget for each year in simulation
+#'
+#' @examples
+#' 
 simulate <- function(spending_df, budget_df, donation_level) {
   # Fit lognormal distribution to the data using maximum-likelihood estimation
   fit_data <- fitdistr(spending_df$amount, "lognormal")

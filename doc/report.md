@@ -1,7 +1,7 @@
 How much of my salary can I afford to donate to charity?
 ================
 Alistair Clark
-2019/12/30 (updated: 2020-02-21)
+2019/12/30 (updated: 2020-02-22)
 
 -----
 

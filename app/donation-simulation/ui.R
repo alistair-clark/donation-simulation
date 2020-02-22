@@ -22,6 +22,7 @@ shinyUI(fluidPage(
                         
                       ),
                       mainPanel(
+                        wellPanel(h4(htmlOutput("remaining"), align = "center")),
                         plotOutput("budget")
                       ))
                       ),
@@ -33,7 +34,8 @@ shinyUI(fluidPage(
                           rHandsontableOutput("hot"),
                           actionButton("go", "Plot Update")
                         ),
-                        mainPanel(plotOutput("histogram"),
+                        mainPanel(wellPanel(h4(htmlOutput("average"), align = "center")),
+                                  plotOutput("histogram"),
                                   plotOutput("distribution"),
                                   plotOutput("simulation"))
                       )
@@ -46,11 +48,14 @@ shinyUI(fluidPage(
                           numericInput("donation", label = "Donation (as % of income):", value = 15)
                         ),
                         mainPanel(
+                          wellPanel(h4(htmlOutput("over"), align = "center")),
+                          br(),
                           plotOutput("donation_plot"),
                           plotOutput("facet")
                           )
                         )
-                      )
+                      ),
+             tabPanel("How the model works", icon = icon("question-circle"))
              )
   )
 )

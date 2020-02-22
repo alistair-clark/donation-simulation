@@ -1,6 +1,7 @@
 
 
 
+
 # load libraries
 library(shiny)
 library(scales)
@@ -11,20 +12,32 @@ source("../../src/functions.R")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-  output$budget <- renderPlot({
-    # Create dataframe with data in budget.csv
-    budget_df <- tibble(
+  budget_df <- reactive({
+    df <- tibble(
       'income' = input$income,
       'taxes' = input$taxes,
       'savings' = input$savings
     )
     
     # Add "remaining" column
-    budget_df <-
-      budget_df %>%
+    df <-
+      df %>%
       mutate(remaining = income - taxes - savings)
-    
-    budget_waterfall(budget_df)
+    df
+  })
+  
+  output$budget <- renderPlot({
+    budget_waterfall(budget_df())
+  })
+  
+  output$remaining <- renderUI({
+    HTML(
+      paste0(
+        "After savings and taxes, you have <b>",
+        dollar(budget_df()$remaining),
+        "</b> remaining per year for living expenses and charitable donations."
+      )
+    )
   })
   
   # Handsontable
@@ -64,8 +77,6 @@ shinyServer(function(input, output) {
   
   values <- reactiveValues(data = DF)
   
-  
-  
   observe({
     if (!is.null(input$hot)) {
       values$data <- hot_to_r(input$hot)
@@ -88,38 +99,44 @@ shinyServer(function(input, output) {
   })
   
   output$hot <- renderRHandsontable({
-    rhandsontable(DF, stretchH = "all")
+    rhandsontable(values$data, stretchH = "all")
+  })
+  
+  output$average <- renderUI({
+    avg_expense <- mean(values$data$amount)
+    HTML(paste0(
+      "Your average monthly expenses are <b>",
+      dollar(avg_expense),
+      "</b>."
+    ))
   })
   
   output$donation_plot <- renderPlot({
-    budget_df <- tibble(
-      'income' = input$income,
-      'taxes' = input$taxes,
-      'savings' = input$savings
-    )
-    
-    # Add "remaining" column
-    budget_df <-
-      budget_df %>%
-      mutate(remaining = income - taxes - savings)
-    
-    simulations_df <- simulate(values$data, budget_df, input$donation)
+    simulations_df <- simulate(values$data, budget_df(), input$donation)
     plot_simulation(simulations_df, input$donation)
   })
   
   output$facet <- renderPlot({
-    budget_df <- tibble(
-      'income' = input$income,
-      'taxes' = input$taxes,
-      'savings' = input$savings
-    )
-    
-    # Add "remaining" column
-    budget_df <-
-      budget_df %>%
-      mutate(remaining = income - taxes - savings)
-    # Plot
-    plot_facet(budget_df, values$data)
+    plot_facet(budget_df(), values$data)
   })
   
+  
+  
+  output$over <- renderUI({
+    simulations_df <- simulate(values$data, budget_df(), input$donation)
+    percent_over <-
+      simulations_df %>%
+      filter(net == "Over budget") %>%
+      nrow() / 10000 * 100
+    
+    HTML(paste0(
+      "If you donate ",
+      input$donation,
+      "% of your salary to charity, you have a ",
+      "<b>",
+      percent_over,
+      "</b>",
+      "% chance of going over budget."
+    ))
+  })
 })

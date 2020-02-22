@@ -15,6 +15,7 @@ Options:
 # Load libraries
 library(docopt)
 library(tidyverse)
+library(scales)
 
 # load helper functions
 source("src/functions.R")
