@@ -13,10 +13,6 @@ I've known this number for years, and yet I still find it hard to give consisten
 
 [Click here to read the full write-up](/doc/report.md) and find out much I can afford to donate.
 
-## Next steps for this project:
-
-- [ ] Share article with data science publications
-- [ ] Create a web app that allows others to run the same analysis
 
 ## Usage
 

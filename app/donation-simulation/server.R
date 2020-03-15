@@ -1,7 +1,3 @@
-
-
-
-
 # load libraries
 library(shiny)
 library(scales)
@@ -9,7 +5,7 @@ library(tidyverse)
 library(MASS)
 
 # load helper functions
-source("../../src/functions.R")
+source("functions.R")
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
