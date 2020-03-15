@@ -31,8 +31,7 @@ shinyUI(fluidPage(
                         sidebarPanel(
                           h4("Add past expenses:"),
                           helpText("Fill out the table and then click the 'Save' button."),
-                          rHandsontableOutput("hot"),
-                          actionButton("go", "Plot Update")
+                          rHandsontableOutput("hot")
                         ),
                         mainPanel(wellPanel(h4(htmlOutput("average"), align = "center")),
                                   plotOutput("histogram"),

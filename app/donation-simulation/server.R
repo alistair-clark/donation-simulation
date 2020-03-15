@@ -6,6 +6,7 @@
 library(shiny)
 library(scales)
 library(tidyverse)
+library(MASS)
 
 # load helper functions
 source("../../src/functions.R")
