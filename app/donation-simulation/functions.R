@@ -219,6 +219,7 @@ plot_simulation <- function(df, donation_level, one_year = FALSE) {
     geom_vline(aes(xintercept = 0)) +
     labs(
       title = paste0('Donation level: ', donation_level, "%"),
+      subtitle = "Each bar represents one simulated year",
       x = "Amount over or under budget, in $",
       y = "Count of simulated years",
       colour = ''
@@ -264,6 +265,7 @@ plot_facet <- function(budget_df, spending_df) {
     geom_vline(aes(xintercept = 0)) +
     labs(
       title = paste0('Donation levels: 5%, 10%, 15%, 20%, 25%, 30%'),
+      subtitle = "Each bar represents one simulated year",
       x = "Amount over or under budget, in $",
       y = "Count of simulated years",
       colour = ''
