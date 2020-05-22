@@ -5,8 +5,8 @@ account: alistairclark
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1950058
-bundleId: 2883808
+bundleId: 2883962
 url: https://alistairclark.shinyapps.io/donation-simulation/
-when: 1584294588.30683
+when: 1584298825.79088
 asMultiple: FALSE
 asStatic: FALSE
